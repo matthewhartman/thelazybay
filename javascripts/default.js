@@ -93,38 +93,40 @@ $(document).ready(function(){
   $('.datetime').datepicker({ dateFormat: 'mm-dd-yy'});
 
   // Contact Form
-  $('#contact-us form').submit(function() {
-    var self = $(this);
-    var formURL = self.attr('action');
-    self.find('input[type=submit]').attr('disabled','disabled');
-    $.ajaxSetup ({
-      // Disable caching of AJAX responses
-      cache: false
-    });
-    $.ajax({
-      url: formURL,
-      type: "post",
-      data: self.serialize(),
-      success: function(response) {
-        var errors = $(response).find('.error').first();
-        var submitMessage = $(response).find('.alert');
-        if ( errors.length ) {
-          alert(errors.text());
-        } else {
-          $('#contact-us').fadeOut(function() {
-            $(this).html(submitMessage);
-          });
-        }
-      },
-      error:function() {
+  $('.contact-form').on('submit', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $url = $this.attr('action');
 
+    // Error Messages
+    $contactErrorMessage = 'Whoops. There was an issue sending your booking - please fill out the form and try again.'
+
+    // Success Messages
+    $contactSuccessHeading = 'Your booking was successfully sent';
+    $contactSuccessMessage = 'One of our friendly staff will be in touch with you to confirm your booking.';
+
+    $.ajax({
+      url: $url,
+      method: 'POST',
+      data: $(this).serialize(),
+      dataType: 'json',
+      beforeSend: function() {
+        $this.prop('disabled', true);
+        $this.find('.contact-submit').attr('value','Sending...')
+        $this.find('.form-error').remove();
       },
-      complete:function() {
-        $('#contact-us').fadeIn();
-        self.find('input[type=submit]').removeAttr('disabled');
+      success: function(data) {
+        $this.prop('disabled', false);
+        $this.find('.contact-submit').attr('value', 'Submit Enquiry');
+        $this.html('<div class="form-success text-center"><h2>' + $contactSuccessHeading + '</h2><p>' + $contactSuccessMessage + '</p></div>');
+      },
+      error: function(err) {
+        $this.prop('disabled', false);
+        $this.find('.contact-submit').attr('value', 'Submit Enquiry');
+        $this.find('legend').after('<div class="form-error text-center">' + $contactErrorMessage + '</div>');
+        $('html,body').stop(true, true).animate({scrollTop: $('#contact-us').offset().top}, 500);
       }
     });
-    return false;
   });
 
 
