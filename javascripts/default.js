@@ -117,12 +117,12 @@ $(document).ready(function(){
       },
       success: function(data) {
         $this.prop('disabled', false);
-        $this.find('.contact-submit').attr('value', 'Submit Enquiry');
+        $this.find('.contact-submit').attr('value', 'send');
         $this.html('<div class="form-success text-center"><h2>' + $contactSuccessHeading + '</h2><p>' + $contactSuccessMessage + '</p></div>');
       },
       error: function(err) {
         $this.prop('disabled', false);
-        $this.find('.contact-submit').attr('value', 'Submit Enquiry');
+        $this.find('.contact-submit').attr('value', 'send');
         $this.find('legend').after('<div class="form-error text-center">' + $contactErrorMessage + '</div>');
         $('html,body').stop(true, true).animate({scrollTop: $('#contact-us').offset().top}, 500);
       }
